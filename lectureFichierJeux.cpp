@@ -5,6 +5,7 @@
 #include <fstream>
 #include "gsl/span"
 #include "cppitertools/range.hpp"
+
 using namespace std;
 
 #pragma region "Fonctions de lecture de base"
@@ -31,28 +32,26 @@ string lireString(istream& fichier)
 }
 #pragma endregion
 
-shared_ptr<Concepteur> chercherConcepteur(Liste<Jeu>& listeJeux, string nom)
+shared_ptr<Concepteur> chercherConcepteur(Liste<Jeu>& listeJeux, Concepteur concepteur)
 {
-	int i = 0;
 	//TODO: Compléter la fonction (équivalent de trouverDesigner du TD2).
-	int pos = listeJeux.chercherElement(listeJeux.getElements()[i], [nom](string nomCompare) {return nom = nomCompare; });
-	/*for (int i : iter::range(listeJeux.size()))
+	shared_ptr<Concepteur> ptrConcepteur = nullptr;
+	for (int i : iter::range(listeJeux.size()))
 	{
-		for (int j : iter::range(listeJeux[i]))
-		{ }
+		ptrConcepteur = listeJeux.getElements()[i].chercherConcepteur([&](Concepteur c) {return c == concepteur; }); //Surcharger == pour les concepteurs.
 	}
-	return {};*/
+	return ptrConcepteur;
 }
 
 shared_ptr<Concepteur> lireConcepteur(Liste<Jeu>& lj, istream& f)
 {
-	Concepteur concepteur;
-	concepteur.setNom(lireString(f));
-	concepteur.setAnneeNaissance(lireUint16(f));
-	concepteur.setPays(lireString(f));
+	Concepteur concepteur(lireString(f), lireUint16(f), lireString(f));
+	//concepteur.setNom(lireString(f));
+	//concepteur.setAnneeNaissance(lireUint16(f));
+	//concepteur.setPays(lireString(f));
 
 	//TODO: Compléter la fonction (équivalent de lireDesigner du TD2).
-	shared_ptr<Concepteur> concepteurExistant = chercherConcepteur(lj, concepteur.getNom());
+	shared_ptr<Concepteur> concepteurExistant = chercherConcepteur(lj, concepteur);
 	if (concepteurExistant != nullptr)
 	{
 		return concepteurExistant;
@@ -71,18 +70,17 @@ shared_ptr<Jeu> lireJeu(istream& f, Liste<Jeu>& lj)
 	//TODO: Compléter la fonction (équivalent de lireJeu du TD2).
 	shared_ptr<Jeu> ptrJeu = make_shared<Jeu>(jeu);
 
-	Liste<Concepteur> concepteurs;
-	*ptrJeu->getConcepteurs() = concepteurs;
+	Liste<Concepteur> concepteurs = Liste<Concepteur>();
 	
 	for (unsigned int i = 0; i < nConcepteurs; i++)
 	{
-		if (ptrJeu->getConcepteurs()->size() == ptrJeu->getConcepteurs()->getCapacite())
+		if (concepteurs.size() == concepteurs.getCapacite())
 		{
-			ptrJeu->getConcepteurs()->changerCapacite();
+			concepteurs.changerCapacite();
 		}
-		ptrJeu->getConcepteurs()->getElements()[i] = *lireConcepteur(lj, f); // Je ne crois pas que c'est bon, a voir...
+		concepteurs.ajouterElement(lireConcepteur(lj, f)); // Pas bon si le concepteur existe deja, a changer
 	}
-
+	ptrJeu->setConcepteurs(concepteurs);
 	cout << "J: " << jeu.getTitre() << endl;  //TODO: Enlever cet affichage temporaire servant à voir que le code fourni lit bien les jeux.
 	return ptrJeu;
 }
@@ -95,7 +93,7 @@ Liste<Jeu> creerListeJeux(const string& nomFichier)
 	//TODO: Compléter la fonction.
 	Liste<Jeu> listeJeux;
 	for ([[maybe_unused]] int i : iter::range(nElements))
-		lireJeu(f, listeJeux);
+		listeJeux.ajouterElement(lireJeu(f, listeJeux));
 
 	return listeJeux;
 }

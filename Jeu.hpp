@@ -1,9 +1,13 @@
 #pragma once
-#include "Liste.hpp"
 #include "Concepteur.hpp"
+#include "Liste.hpp"
 #include <string>
 #include <memory>
 #include <functional>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 class Jeu
 {
@@ -18,14 +22,18 @@ public:
 	void setDeveloppeur(const std::string& developpeur) { developpeur_ = developpeur; }
 
 	//TODO: Pouvoir accéder à la liste de concepteurs.
-	const std::shared_ptr<Liste<Concepteur>>  getConcepteurs() const { return concepteurs_; }
+	Liste<Concepteur>& getConcepteurs() { return concepteurs_; }
 
+	void setConcepteurs(Liste<Concepteur>& concepteurs) { concepteurs_ = concepteurs;}
+
+	friend ostream& operator<<(ostream& out, const Jeu& j);
 	//TODO: Votre méthode pour trouver un concepteur selon un critère donné par une lambda, en utilisant la méthode de Liste.
+	shared_ptr<Concepteur> chercherConcepteur(const function<bool(Concepteur)>& critere);
 
 private:
-	std::string titre_;
+	string titre_;
 	unsigned anneeSortie_;
-	std::string developpeur_;
-	shared_ptr<Liste<Concepteur>> concepteurs_;
+	string developpeur_;
+	Liste<Concepteur> concepteurs_;
 	//TODO: Attribut de la liste des concepteurs du jeu
 };

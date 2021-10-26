@@ -14,6 +14,18 @@ Jeu::Jeu()
 	titre_ = "Unknown";
 	anneeSortie_ = 0;
 	developpeur_ = "Unknown";
-	concepteurs_ = make_shared<Liste<Concepteur>>();
+	concepteurs_ = Liste <Concepteur>(); 
 }
 
+shared_ptr<Concepteur> Jeu::chercherConcepteur(const function<bool(Concepteur)>& critere)
+{
+	shared_ptr<Concepteur> ptrConcepteur = nullptr;
+	for (int i : iter::range(concepteurs_.size()))
+		if (critere(concepteurs_.getElements()[i]))
+		{
+			ptrConcepteur = make_shared<Concepteur>();
+			*ptrConcepteur = concepteurs_.getElements()[i];
+		}
+
+	return ptrConcepteur;
+}

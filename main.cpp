@@ -7,9 +7,30 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+
 using namespace std;
 
 //TODO: Vos surcharges d'opérateur <<
+ostream& operator<<(ostream& out, const Concepteur& c)
+{
+	return out << c.getNom() << "\t" << c.getAnneeNaissance() << "\t" << c.getPays() << endl;
+}
+ostream& operator<<(ostream& out, Jeu& j)
+{
+	out << j.getTitre() << "\t" << j.getAnneeSortie() << "\t" << j.getDeveloppeur() << endl;
+	for (unsigned i = 0; i < j.getConcepteurs().size(); i++)
+	{
+		out << j.getConcepteurs()[i] << endl;
+	}
+	return out;
+}
+ostream& operator<<(ostream& out, const Liste<Jeu>& l)
+{
+	for (unsigned i = 0; i < l.size(); i++)
+		out << l.getElements()[i] << endl;
+	return out;
+}
+
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
